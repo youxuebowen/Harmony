@@ -1,0 +1,27 @@
+
+
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Harmony AI Chat Module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "HarmonyOS AI Chat Application"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Harmony AI"
+    },
+    {
+      "name": "app_name",
+      "value": "Harmony AI"
+    },
+    {
+      "name": "permission_internet_reason",
+      "value": "需要网络权限以连接 AI 服务"
+    }
+  ]
+}
+

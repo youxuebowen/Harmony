@@ -1,0 +1,64 @@
+{
+  "apiType": "stageMode",
+  "buildOption": {
+    "resOptions": {
+      "copyCodeResource": {
+        "enable": false
+      }
+    }
+  },
+  "buildOptionSet": [
+    {
+      "name": "release",
+      "arkOptions": {
+        "obfuscation": {
+          "ruleOptions": {
+            "enable": false,
+            "files": [
+              "./obfuscation-rules.txt"
+            ]
+          }
+        }
+      }
+    },
+  ],
+  "targets": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "ohosTest",
+    }
+  ],
+//  "app": {
+//    "signingConfigs": [],
+//    "products": [
+//      {
+//        "name": "default",
+//        "signingConfig": "default"
+//      }
+//    ],
+//    "buildModeSet": [
+//      {
+//        "name": "debug"
+//      },
+//      {
+//        "name": "release"
+//      }
+//    ]
+//  },
+//  "modules": [
+//    {
+//      "name": "entry",
+//      "srcPath": "./entry",
+//      "targets": [
+//        {
+//          "name": "default",
+//          "applyToProducts": [
+//            "default"
+//          ]
+//        }
+//      ]
+//    }
+//  ]
+}
