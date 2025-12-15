@@ -8,6 +8,7 @@ import { JSON } from '@kit.ArkTS';
 import { messageContent } from '../model/ChatMessage';
 import { BusinessError } from '@kit.BasicServicesKit';
 
+
 // 定义更通用的Headers接口以支持Authorization等自定义头部
 export interface RequestHeaders {
   'Content-Type': string;
@@ -79,6 +80,18 @@ export interface DoubaoResponse {
   choices: ResponseChoice[];
   usage?: ResponseUsage;
   error?: error;
+}
+
+// 定义项目的获取接口
+export interface ProjectsContent{
+  name: string;
+  url: string;
+  content: string;
+}
+// 定义收藏接口响应类型
+export interface FavorResponse {
+  success: boolean;
+  data: Array<ProjectsContent>;
 }
 
 export interface ChatOptions {
@@ -393,4 +406,24 @@ export class HttpClient {
   //     reasoning_effort: reasoningEffort
   //   };
   // }
+
+  /**
+   * 获取收藏数据
+   * @returns 收藏数据响应
+   * async 关键字表示这是一个异步方法
+   * 返回类型为 Promise<FavorResponse> ，表示该方法会异步返回 FavorResponse 类型的数据
+   */
+
+  async getFavor(): Promise<FavorResponse> {
+    const url = 'http://8.130.154.167:18080/api/v2/get_favor';
+
+    let httpClient = http.createHttp();
+
+    let result = await httpClient.request(url, {
+      method: http.RequestMethod.GET,
+    });
+
+    return JSON.parse(result.result as string) as FavorResponse;
+  }
+
 }

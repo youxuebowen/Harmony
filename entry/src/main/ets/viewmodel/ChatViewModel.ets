@@ -162,5 +162,19 @@ export class ChatViewModel {
       await this.repository.saveSessionToHistory(this.currentSession);
     }
   }
+
+  /**
+   * 获取收藏数据
+   * @returns 收藏数据响应
+   */
+  async getFavor() {
+    try {
+      const response = await this.apiService.getFavor();
+      return response;
+    } catch (error) {
+      console.error('获取收藏数据失败:', error);
+      return null;
+    }
+  }
 }
 

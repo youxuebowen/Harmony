@@ -3,7 +3,7 @@
 // AI API 服务封装 - 豆包 API
 // ============================================
 
-import { HttpClient, MessageContentItem, Message, ChatOptions, RequestBody, DoubaoRequest, DoubaoResponse, ResponseMessage} from './HttpClient';
+import { HttpClient, MessageContentItem, Message, ChatOptions, RequestBody, DoubaoRequest, DoubaoResponse, ResponseMessage, FavorResponse} from './HttpClient';
 import { LLMResponse } from '../model/LLMRequest';
 import {messageContent} from '../model/ChatMessage'
 import { JSON } from '@kit.ArkTS';
@@ -189,4 +189,22 @@ export class DoubaoApiService {
 //       throw new Error('AI 服务暂时不可用，请稍后重试');
 //     }
 //   }
+
+  /**
+   * 获取收藏数据
+   * @returns 收藏数据响应
+   */
+  async getFavor(): Promise<FavorResponse> {
+    try {
+      const httpClient = new HttpClient();
+      
+      // 调用HttpClient的getFavor方法获取收藏数据
+      const response = await httpClient.getFavor();
+      
+      return response;
+    } catch (error) {
+      console.error('获取收藏数据失败:', error);
+      throw new Error('获取收藏数据失败，请稍后重试');
+    }
+  }
 }

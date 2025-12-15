@@ -1,16 +1,12 @@
 // 聊天主页面 - 完整 ArkUI 实现
 // ============================================
-
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
-// import { AlertDialog, DialogAlignment } from '@ohos.ui.dialog';
-// import { Edge } from '@ohos.display';
-// import { Color } from '@ohos.util.color';
-// import { FontWeight } from '@ohos.text';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
 import { Message } from '../model/ChatMessage';
 import { ChatBubble } from '../components/ChatBubble';
 import { InputBar } from '../components/InputBar';
+import { FavorResponse } from '../network/HttpClient';
 
 @Entry
 @Component
@@ -20,10 +16,9 @@ struct ChatPage {
   @State showSettings: boolean = false;
   @State currentMode: string = 'low';
   @State memoryEnabled: boolean = false;
-
+  @State favorData: FavorResponse | null = null;
   private viewModel: ChatViewModel = new ChatViewModel();
   private scroller: Scroller = new Scroller();
-
   aboutToAppear() {
     this.loadSettings();
   }
@@ -86,6 +81,7 @@ struct ChatPage {
     }
   }
 
+
   // 删除聊天按钮
   handleClearChat() {
     AlertDialog.show({
@@ -108,13 +104,6 @@ struct ChatPage {
     });
   }
 
-  handleExport() {
-    this.viewModel.exportConversation();
-    promptAction.showToast({
-      message: '对话已导出',
-      duration: 2000
-    });
-  }
 
   scrollToBottom() {
     setTimeout(() => {
@@ -190,15 +179,24 @@ struct ChatPage {
           .backgroundImagePosition({ x: 10, y: 10 })
           .onClick(() => this.handleClearChat())
 
+
+        // 收藏页面入口按钮
         Button({ type: ButtonType.Normal })
           .width(40)
           .height(40)
           .borderRadius(20)
           .backgroundColor('#F3F4F6')
-          .backgroundImage($r('app.media.ic_export'))
+          .backgroundImage($r('app.media.Love'))
           .backgroundImageSize({ width: 20, height: 20 })
           .backgroundImagePosition({ x: 10, y: 10 })
-          .onClick(() => this.handleExport())
+          .onClick(() => {
+            try {
+              router.push({url: 'pages/FavoritePage'});
+              // router.pushUrl({url: 'pages/FavoritePage'});
+            } catch (err) {
+              console.error(`跳转 FavoritePage 失败: ${err}`);
+            }
+          })
 
         Button({ type: ButtonType.Normal })
           .width(40)
