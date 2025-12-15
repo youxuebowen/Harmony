@@ -1,10 +1,9 @@
 // 聊天视图模型
 // ============================================
 
-import { Message, ChatSession, sendMessage, messageContent } from '../model/ChatMessage';
-import { ChatRepository, UserSettings } from '../repository/ChatRepository';
+import {  ChatMessage, ChatSession, sendResult, sessionMessage } from '../data/ChatMessage';
+import { ChatRepository, UserSettings } from '../data/ChatRepository';
 import { DoubaoApiService } from '../network/DoubaoApiService';
-import { SecurityUtils } from '../utils/SecurityUtils';
 import common from '@ohos.app.ability.common';
 
 
@@ -41,15 +40,7 @@ export class ChatViewModel {
     }
   }
 
-  async sendMessage(content: string): Promise<sendMessage> {
-    // 安全检查
-    const safetyCheck = SecurityUtils.checkSafety(content);
-    if (!safetyCheck.safe) {
-      return {
-        success: false,
-        message: safetyCheck.message as string
-      };
-    }
+  async sendMessage(content: string): Promise<sendResult> {
     // 初始化或更新会话,如果会话未null
     if (!this.currentSession) {
       this.currentSession = {
@@ -60,55 +51,49 @@ export class ChatViewModel {
         updatedAt: Date.now()
       };
     }
-
+    const messageContent : ChatMessage ={
+      role: "user",
+      content:content
+    }
     // 创建用户消息
-    const userMessage: Message = {
+    const userMessage: sessionMessage = {
+      sessionID: this.currentSession!.id,
       id: Date.now().toString(),
-      role: 'user',
-      content: content,
-      timestamp: Date.now(),
-      sessionID: this.currentSession!.id
+      messages:messageContent
     };
     // 把消息添加到会话里
-
     this.currentSession.messages.push(userMessage);
 
     try {
-
-      // 使用时指定类型
-      const apiMessages: messageContent[] = this.currentSession.messages.map((msg): messageContent => ({
-        role: msg.role,
-        content: msg.content
+      // 将当前会话的消息转换为ChatMessage类型数组
+      const messages: ChatMessage[] = this.currentSession.messages.map((msg): ChatMessage => ({
+        role: msg.messages?.role as string,
+        content: msg.messages?.content as string
       }));
-
-      // 调用豆包API，使用新的参数格式
-      const response = await this.apiService.chat(apiMessages, {
-        mode: this.settings.mode,
-        // 豆包API使用reasoning_effort而不是temperature
-        thinking: this.settings.thinking,
-        maxTokens: this.settings.maxTokens // 使用豆包API支持的较大值
-      });
+      // 调用豆包API
+      const response = await this.apiService.chatAI(messages);
+      
+      // 确保响应不为空且有choices
+      if (!response || !response.choices || response.choices.length === 0) {
+        throw new Error('API响应格式错误: 缺少必要的choices字段');
+      }
+      
+      // 获取第一个选择项中的消息
+      const responseChoice = response.choices[0];
+      const assistantMessageContent = responseChoice.message;
 
       // 创建助手消息
-      const assistantMessage: Message = {
+      const assistantMessage: sessionMessage = {
+        sessionID: this.currentSession.id,
         id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.content,
-        timestamp: Date.now(),
-        // metadata: {
-        //   tokens: response.tokens,
-        //   modelVersion: response.modelVersion
-        // },
-        sessionID: this.currentSession.id
+        messages:assistantMessageContent
       };
 
       this.currentSession.messages.push(assistantMessage);
       this.currentSession.updatedAt = Date.now();
-
       // 保存会话
-      await this.repository.saveCurrentSession(this.currentSession);
-
-      return { success: true, message: safetyCheck.message as string };
+      // await this.repository.saveCurrentSession(this.currentSession);
+      return { success: true,message: '发送成功'};
     } catch (error) {
       console.error('Send message error:', error);
       return {
@@ -127,9 +112,9 @@ export class ChatViewModel {
     this.currentSession.messages = this.currentSession.messages.slice(0, -1);
 
     // 获取最后一条用户消息
-    const lastUserMessage = this.currentSession.messages[this.currentSession.messages.length - 1];
+    const lastUserMessage = this.currentSession.messages[-1];
 
-    const result = await this.sendMessage(lastUserMessage.content);
+    const result = await this.sendMessage(lastUserMessage.messages?.content as string);
     return result.success;
   }
 
@@ -148,7 +133,7 @@ export class ChatViewModel {
     await this.repository.saveSettings(this.settings);
   }
 
-  getMessages(): Message[] {
+  getMessages(): sessionMessage[] {
     return this.currentSession?.messages || [];
   }
 

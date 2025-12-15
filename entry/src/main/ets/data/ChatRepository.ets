@@ -2,7 +2,7 @@
 // ============================================
 
 import preferences from '@ohos.data.preferences';
-import { Message, ChatSession } from '../model/ChatMessage';
+import { sessionMessage, ChatSession } from './ChatMessage';
 import { UserMemory } from '../model/UserMemory';
 
 export class ChatRepository {

@@ -2,7 +2,7 @@
 // ============================================
 
 import { UserMemory } from '../model/UserMemory';
-import { ChatRepository } from '../repository/ChatRepository';
+import { ChatRepository } from '../data/ChatRepository';
 
 export class MemoryViewModel {
   private repository: ChatRepository;

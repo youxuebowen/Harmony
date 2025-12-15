@@ -3,15 +3,14 @@
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
-import { Message } from '../model/ChatMessage';
-import { ChatBubble } from '../components/ChatBubble';
+import { FavorResponse, sendResult,sessionMessage } from '../data/ChatMessage';
 import { InputBar } from '../components/InputBar';
-import { FavorResponse } from '../network/HttpClient';
+import { MessageList } from '../components/MessageList';
 
 @Entry
 @Component
 struct ChatPage {
-  @State messages: Message[] = [];
+  @State messages: sessionMessage[] = [];
   @State isLoading: boolean = false;
   @State showSettings: boolean = false;
   @State currentMode: string = 'low';
@@ -38,17 +37,17 @@ struct ChatPage {
     this.isLoading = true;
 
     try {
-      const result = await this.viewModel.sendMessage(content);
+      const result:sendResult = await this.viewModel.sendMessage(content);
 
       if (result.success) {
         // 获取最新的的聊天列表
         this.messages = this.viewModel.getMessages();
-        // 强制聊天框滚动到最底部
-        this.scrollToBottom();
+        // 不再强制滚动到底部，让消息自然靠上显示
+        // this.scrollToBottom();
       } else {
         this.messages = this.viewModel.getMessages();
-        // 强制聊天框滚动到最底部
-        this.scrollToBottom();
+        // 不再强制滚动到底部，让消息自然靠上显示
+        // this.scrollToBottom();
         promptAction.showToast({
           message: result.message || '发送失败',
           duration: 2000
@@ -115,17 +114,18 @@ struct ChatPage {
     Column() {
       // 顶部导航栏
       this.buildHeader()
-
       // 设置面板
       if (this.showSettings) {
         this.buildSettingsPanel()
       }
-
       // 消息列表区域
       if (this.messages.length === 0) {
         this.buildWelcomeScreen()
       } else {
-        this.buildMessageList()
+        MessageList({
+          messages: this.messages,
+          // scroller: this.scroller
+        })
       }
 
       // 底部输入栏
@@ -373,34 +373,6 @@ struct ChatPage {
     })
   }
 
-  @Builder
-  buildMessageList() {
-    Scroll(this.scroller) {
-      Column({ space: 16 }) {
-        ForEach(this.messages, (msg: Message, index: number) => {
-          ChatBubble({
-            message: msg,
-            onReport: () => {
-              promptAction.showToast({
-                message: '感谢您的反馈，我们会审核这条消息',
-                duration: 2000
-              });
-            }
-          })
-        }, (msg: Message) => msg.id)
-
-        if (this.isLoading) {
-          this.buildLoadingIndicator()
-        }
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 16, bottom: 16 })
-    }
-    .width('100%')
-    .layoutWeight(1)
-    .scrollBar(BarState.Auto)
-    .edgeEffect(EdgeEffect.Spring)
-  }
 
   @Builder
   buildLoadingIndicator() {

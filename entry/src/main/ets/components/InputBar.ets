@@ -27,18 +27,7 @@ export struct InputBar {
           })
 
         if (this.showRegenerate) {
-          // Button({ type: ButtonType.Circle })
-          //   .width(48)
-          //   .height(48)
-          //   .backgroundColor('#F3F4F6')
-          //   .backgroundImage($r('app.media.ic_refresh'))
-          //   .backgroundImageSize({ width: 20, height: 20 })
-          //   .onClick(() => {
-          //     if (this.onRegenerate && !this.isLoading) {
-          //       this.onRegenerate();
-          //     }
-          //   })
-          //   .enabled(!this.isLoading)
+
           Button({ type: ButtonType.Circle }) {
             Image($r('app.media.ic_refresh'))
               .width(20)
@@ -51,14 +40,7 @@ export struct InputBar {
           .enabled(this.inputText.trim() !== '' && !this.isLoading)
         }
 
-        // Button({ type: ButtonType.Circle })
-        //   .width(48)
-        //   .height(48)
-        //   .backgroundColor(this.inputText.trim() && !this.isLoading ? '#3B82F6' : '#D1D5DB')
-        //   .backgroundImage($r('app.media.ic_send'))
-        //   .backgroundImageSize({ width: 20, height: 20 })
-        //   .onClick(() => this.handleSend())
-        //   .enabled(this.inputText.trim() !== '' && !this.isLoading)
+
         Button({ type: ButtonType.Circle }) {
           Image($r('app.media.ic_send'))
             .width(20)

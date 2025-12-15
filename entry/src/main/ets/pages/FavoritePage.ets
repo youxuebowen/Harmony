@@ -1,5 +1,5 @@
 import router from '@ohos.router';
-import { FavorResponse, ProjectsContent } from '../network/HttpClient';
+import { FavorResponse, ProjectsContent } from '../data/ChatMessage';
 import { ChatViewModel } from '../viewmodel/ChatViewModel';
 
 @Entry
